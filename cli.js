@@ -43,6 +43,14 @@ import StackLogger from './src/stack_logger.js';
 import streamUtils from './src/stream_utils.js';
 import parseSearchFilter from './src/filter_parser.js';
 
+// Change require to import
+import { bootstrap } from 'global-agent';
+
+// Add this code near the start of the file, before any HTTP requests are made
+if (process.env.GLOBAL_AGENT_HTTP_PROXY) {
+  bootstrap();
+}
+
 const maybeStat = path => fs.stat(path).catch(() => false);
 
 const __dirname = xurl.fileURLToPath(new URL('.', import.meta.url));
@@ -1042,7 +1050,7 @@ async function init(packageJson, queries, options) {
                   outputFile: rawAudio,
                   logger: trackLogger,
                   opts: {
-                    tag: `[‘${meta.trackName}’]`,
+                    tag: `[${meta.trackName}]`,
                     retryMessage: data => trackLogger.getText(`| ${getRetryMessage(data)}`),
                     resumeHandler: offset =>
                       trackLogger.log(cStringd(`| :{color(yellow)}{i}:{color:close(yellow)} Resuming at ${offset}`)),
